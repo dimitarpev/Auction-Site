@@ -1,0 +1,147 @@
+### Get all the users
+GET {{protocol}}{{host}}:{{port}}/users
+// login and authorization tests later on
+
+> {%
+    client.test(
+        "Get all users",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of users");
+        }
+    )
+%}
+
+
+### Get a specific user based on id
+GET {{protocol}}{{host}}:{{port}}/users/1
+Accept: application/json
+
+> {%
+    client.test(
+        "Get specific user",
+        function () {
+            client.assert(response.status === 200, "Failed to get user, as user with that id is not found");
+        }
+    )
+%}
+
+### Get a specific user based on id - bad weather
+GET {{protocol}}{{host}}:{{port}}/users/-1
+Accept: application/json
+
+> {%
+    client.test(
+        "Get specific user",
+        function () {
+            client.assert(response.status === 404, "Expected error code 404, but received 200");
+        }
+    )
+%}
+
+### Create a new user
+POST {{protocol}}{{host}}:{{port}}/users
+Content-Type: application/json
+
+
+{
+  "username": "djimi",
+  "email": "djimi2992@outlook.com",
+  "password": "111111",
+  "isAdmin": false
+}
+
+> {%
+    client.test(
+        "Create new user",
+        function () {
+            client.assert(response.status === 201, "Failed to create user");
+            const user = response.body;
+            client.assert(user.length >= 1, "Incorrect number of arguments when creating user");
+            client.assert(user.username === "djimi", "Username variable not assigned correctly");
+            client.assert(user.email === "djimi2992@outlook.com", "Email variable not assigned correctly");
+            client.assert(user.password === "111111", "Password variable not assigned correctly");
+            client.assert(user.isAdmin === false, "IsAdmin variable not assigned correctly");
+        }
+    )
+%}
+
+### Create a new user - bad weather
+POST {{protocol}}{{host}}:{{port}}/users
+Content-Type: application/json
+
+
+{
+  "username": -1
+
+}
+
+> {%
+    client.test(
+        "Create new user",
+        function () {
+            client.assert(response.status === 400, "Expected response code 400, but received 201");
+
+        }
+    )
+%}
+
+### Edit a user
+PATCH {{protocol}}{{host}}:{{port}}/users/1
+Content-Type: application/json
+
+{
+  "password": "222222"
+}
+
+> {%
+    client.test(
+        "Edit a user",
+        function () {
+            client.assert(response.status === 200, "Failed to edit user");
+            client.assert(response.body.length >= 1, "Incorrect number of arguments when editing user");
+        }
+    )
+%}
+
+### Edit a user - bad weather
+PATCH {{protocol}}{{host}}:{{port}}/users/1
+Content-Type: application/json
+
+{
+  "username": -1
+}
+
+> {%
+    client.test(
+        "Edit a user",
+        function () {
+            client.assert(response.status === 400, "Expected response 400 when editing user, but received 200");
+        }
+    )
+%}
+
+### Delete a user
+DELETE {{protocol}}{{host}}:{{port}}/users/1
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete a user",
+        function () {
+            client.assert(response.status === 200, "Failed to delete the user");
+        }
+    )
+%}
+
+### Delete a user - bad weather
+DELETE {{protocol}}{{host}}:{{port}}/users/-1
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete a user",
+        function () {
+            client.assert(response.status === 400, "Expected error code 400, but deleted the user and received 200");
+        }
+    )
+%}

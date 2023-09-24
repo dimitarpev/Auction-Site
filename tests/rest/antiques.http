@@ -1,0 +1,179 @@
+### Get all the antiques
+GET {{protocol}}{{host}}:{{port}}/antiques
+//content-type - is if it takes a body and is not required
+//filter tests
+// no bad weather for getting list of antiques
+// login and authorization tests later on
+
+> {%
+client.test(
+    "Get all antiques",
+    function () {
+        client.assert(response.status === 200, "Failed to get list of antiques");
+    }
+)
+ %}
+
+### Get all antiques with origin filter test
+GET {{protocol}}{{host}}:{{port}}/antiques?origin="Bulgaria"
+
+> {%
+    client.test(
+        "Get all antiques from Bulgaria",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of antiques of origin Bulgaria");
+        }
+    )
+%}
+
+
+### Get a specific antique based on id
+GET {{protocol}}{{host}}:{{port}}/antiques/1
+Accept: application/json
+
+> {%
+ client.test(
+     "Get specific antique",
+     function () {
+         client.assert(response.status === 200, "Failed to get antique, as antique with that id is not found");
+     }
+ )
+ %}
+
+### Get a specific antique based on id - bad weather
+GET {{protocol}}{{host}}:{{port}}/antiques/-1
+Accept: application/json
+
+> {%
+    client.test(
+        "Get specific antique",
+        function () {
+            client.assert(response.status === 404, "Expected error code 404, but received 200");
+        }
+    )
+%}
+
+### Create a new antique
+POST {{protocol}}{{host}}:{{port}}/antiques
+Content-Type: application/json
+
+//ask if attributes okay, id should be included and start/end time type
+
+{
+  "name": "Bulgarian Orthodox Vase",
+  "type": "vase",
+  "origin": "Bulgaria",
+  "year": 1760,
+  "material": "porcelain",
+  "description": "old vase",
+  "startTime": "09/09/2023",
+  "endTime": "13/09/2023",
+  "startingPrice": 800,
+  "ggdsdfs" : 400
+}
+
+> {%
+client.test(
+    "Create new antique",
+        function () {
+            client.assert(response.status === 201, "Failed to create antique");
+            const antique = response.body;
+            client.assert(antique.length >= 1, "Incorrect number of arguments when creating antique");
+            client.assert(antique.name === "Bulgarian Orthodox Vase", "Name variable not assigned correctly");
+            client.assert(antique.type === "vase", "Type variable not assigned correctly");
+            client.assert(antique.origin === "Bulgaria", "Origin variable not assigned correctly");
+            client.assert(antique.year === 1760, "Year variable not assigned correctly");
+            client.assert(antique.material === "porcelain", "Material variable not assigned correctly");
+            client.assert(antique.description === "old vase", "Description variable not assigned correctly");
+            client.assert(antique.startTime === Date.now(), "StartTime variable not assigned correctly");
+            client.assert(antique.endTime === Date.now() + 3, "EndTime variable not assigned correctly");
+            client.assert(antique.startingPrice === 800, "StartingPrice variable not assigned correctly");
+        }
+)
+ %}
+
+### Create a new antique - bad weather
+POST {{protocol}}{{host}}:{{port}}/antiques
+Content-Type: application/json
+
+//ask if response code correct
+
+{
+  "name": "Bulgarian Orthodox Vase"
+
+}
+
+> {%
+    client.test(
+        "Create new antique",
+        function () {
+            client.assert(response.status === 400, "Expected response code 400, but received 201");
+
+        }
+    )
+%}
+
+### Edit an antique
+PATCH {{protocol}}{{host}}:{{port}}/antiques/1
+Content-Type: application/json
+//ask if patch works like that
+
+{
+  "endTime": "15/09/2023"
+}
+
+> {%
+ client.test(
+     "Edit an antique",
+     function () {
+         client.assert(response.status === 200, "Failed to edit antique");
+         client.assert(response.body.length >= 1, "Incorrect number of arguments when editing antique");
+     }
+ )
+ %}
+
+### Edit an antique - bad weather
+PATCH {{protocol}}{{host}}:{{port}}/antiques/1
+Content-Type: application/json
+//ask if patch works like that
+
+{
+  "endTime": null
+}
+
+> {%
+ client.test(
+     "Edit an antique",
+     function () {
+         client.assert(response.status === 400, "Expected response 400 when editing antique, but received 200");
+     }
+ )
+ %}
+
+### Delete an antique
+DELETE {{protocol}}{{host}}:{{port}}/antiques/1
+//does everything have content-type
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete an antique",
+        function () {
+            client.assert(response.status === 200, "Failed to delete the antique");
+        }
+    )
+%}
+
+### Delete an antique - bad weather
+DELETE {{protocol}}{{host}}:{{port}}/antiques/-1
+//does everything have content-type
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete an antique",
+        function () {
+            client.assert(response.status === 400, "Expected error code 400, but deleted the antique and received 200");
+        }
+    )
+%}

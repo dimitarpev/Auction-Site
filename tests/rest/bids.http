@@ -1,0 +1,96 @@
+### Get all bids of a user
+GET {{protocol}}{{host}}:{{port}}/users/1/bids
+
+> {%
+    client.test(
+        "Get all bids of specific user",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of bids");
+        }
+    )
+%}
+
+### Get all bids for an antique
+GET {{protocol}}{{host}}:{{port}}/antiques/1/bids
+
+> {%
+    client.test(
+        "Get all bids of specific antique",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of bids");
+        }
+    )
+%}
+
+
+### Place a new bid for an antique
+POST {{protocol}}{{host}}:{{port}}/antiques/1/bids
+Content-Type: application/json
+
+
+{
+  "amount": 900,
+  "dateTime": "09/09/2023",
+  "userId": 1,
+  "antiqueId": 1
+}
+
+> {%
+    client.test(
+        "Create new bid for an antique",
+        function () {
+            client.assert(response.status === 201, "Failed to create bid");
+            const bid = response.body;
+            client.assert(bid.length >= 1, "Incorrect number of arguments when creating user");
+            client.assert(bid.amount === 900, "Amount variable not assigned correctly");
+            client.assert(bid.dateTime === "09/09/2023", "DateTime variable not assigned correctly");
+            client.assert(bid.userId === 1, "UserId variable not assigned correctly");
+            client.assert(bid.antiqueId === 1, "AntiqueId variable not assigned correctly");
+        }
+    )
+%}
+
+### Place a new bid - bad weather
+POST {{protocol}}{{host}}:{{port}}/antiques/1/bids
+Content-Type: application/json
+
+
+{
+  "amount": -1
+
+}
+
+> {%
+    client.test(
+        "Create new bid for an antique",
+        function () {
+            client.assert(response.status === 400, "Expected response code 400, but received 201");
+        }
+    )
+%}
+
+### Delete a bid from antique auction
+DELETE {{protocol}}{{host}}:{{port}}/antiques/1/bids/1
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete bid for antique",
+        function () {
+            client.assert(response.status === 200, "Failed to delete the bid");
+        }
+    )
+%}
+
+### Delete a user - bad weather
+DELETE {{protocol}}{{host}}:{{port}}/antiques/1/bids/-1
+Content-Type: application/json
+
+> {%
+    client.test(
+        "Delete bid for antique auction",
+        function () {
+            client.assert(response.status === 400, "Expected error code 400, but deleted the bid and received 200");
+        }
+    )
+%}
