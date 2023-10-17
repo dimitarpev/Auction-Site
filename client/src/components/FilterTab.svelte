@@ -2,48 +2,42 @@
 <!-- FilterTab.svelte -->
 <script>
     import Button from "../lib/Button.svelte";
-    import FilterOption from "../lib/FIlterOption.svelte";
+    import FilterOption from "../lib/FilterOption.svelte";
     import YearSlider from "../lib/YearSlider.svelte";
+    import {createEventDispatcher} from "svelte";
+    import filterStore from "../stores/filterStore.js";
 
+    const dispatch = createEventDispatcher();
     let sliderValue = 0;
-    let filteredMaterial;
-    let filteredOrigin;
-    let filteredCentury;
+    let filteredMaterial = '';
+    let filteredOrigin = '';
+    let filteredCentury = '';
     // Filter options
-    let filterMaterialOptions = [
-        { id: "all", label: "All" },
-        { id: "filter1", label: "Bronze" },
-        { id: "filter2", label: "Gold" },
-        { id: "filter3", label: "Iron" }
-    ];
-
-    let filterOriginOptions = [
-        { id: "all", label: "All" },
-        { id: "filter1", label: "Bulgaria" },
-        { id: "filter2", label: "Netherlands" },
-        { id: "filter3", label: "Greece" }
-    ];
+    let filterMaterialOptions = ["All", "Bronze", "Gold", "Iron"];
+    let filterOriginOptions = ["All", "Bulgaria", "Netherlands", "Greece"];
 
 
     function handleFilterApply() {
-
+        console.log(filteredMaterial);
+        console.log(filteredOrigin);
+        $filterStore.material = filteredMaterial;
+        $filterStore.origin = filteredOrigin;
+        const actualYear = sliderValue * 100;
+        console.log(actualYear);
+        $filterStore.year = actualYear;
     }
 
-    function handleMaterialChange(event) {
-        filteredMaterial = event.target.value;
-    }
-    function handleOriginChange(event) {
-        filteredOrigin = event.target.value;
-    }
+
+
 
 </script>
 
 <div class="filter-tab">
     <h3>Filter By:</h3>
 
-    <FilterOption filterCategory="Material" filterOptions={filterMaterialOptions} on:change={handleMaterialChange}/>
-    <FilterOption filterCategory="Origin" filterOptions={filterOriginOptions} on:change={handleOriginChange}/>
-    <YearSlider sliderValue={sliderValue}/>
+    <FilterOption filterCategory="Material" filterOptions={filterMaterialOptions} bind:selectedFilter={filteredMaterial} />
+    <FilterOption filterCategory="Origin" filterOptions={filterOriginOptions} bind:selectedFilter={filteredOrigin}/>
+    <YearSlider bind:sliderValue={sliderValue} />
 
     <Button text="Apply filters" onClick={handleFilterApply}/>
 </div>

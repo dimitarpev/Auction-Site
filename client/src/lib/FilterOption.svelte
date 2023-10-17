@@ -1,9 +1,9 @@
 <script>
 
-let selectedFilter = null;
 
 export let filterCategory;
 export let filterOptions;
+export let selectedFilter;
 
 
 function handleFilterChange(event) {
@@ -14,7 +14,7 @@ function handleFilterChange(event) {
         <span>{filterCategory}</span>
         <select bind:value={selectedFilter} on:change={handleFilterChange}>
             {#each filterOptions as option}
-                <option value={option.id}>{option.label}</option>
+                <option value={option}>{option}</option>
             {/each}
         </select>
     </div>

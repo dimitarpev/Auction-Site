@@ -31,7 +31,7 @@ Content-Type: application/json
 {
   "amount": 900,
   "dateTime": "09/09/2023",
-  "userId": 1,
+  "userEmail": "djimi2992@outlook.com",
   "antiqueId": 1
 }
 
@@ -44,7 +44,7 @@ Content-Type: application/json
             client.assert(bid.length >= 1, "Incorrect number of arguments when creating user");
             client.assert(bid.amount === 900, "Amount variable not assigned correctly");
             client.assert(bid.dateTime === "09/09/2023", "DateTime variable not assigned correctly");
-            client.assert(bid.userId === 1, "UserId variable not assigned correctly");
+            client.assert(bid.userEmail === "djimi2992@outlook.com", "UserEmails variable not assigned correctly");
             client.assert(bid.antiqueId === 1, "AntiqueId variable not assigned correctly");
         }
     )

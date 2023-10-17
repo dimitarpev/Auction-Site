@@ -7,6 +7,8 @@
   import Header from "./components/Header.svelte";
   import LogIn from "./pages/LogIn.svelte";
   import Register from "./pages/Register.svelte";
+  import AuctionPage from "./pages/AuctionPage.svelte";
+  import CreateAuction from "./pages/CreateAuction.svelte";
 
   let page;
   let params;
@@ -26,6 +28,15 @@
   });
   router('/register', (ctx) => {
     page = Register;
+    currentRoute = ctx.pathname;
+  });
+  router('/auction/:id', (ctx) => {
+    page = AuctionPage;
+    currentRoute = ctx.pathname;
+    params = ctx.params;
+  });
+  router('/createAuction', (ctx) => {
+    page = CreateAuction;
     currentRoute = ctx.pathname;
   });
 

@@ -1,24 +1,46 @@
 <script>
+    import router from 'page';
     import Button from "../lib/Button.svelte";
+    import tokenStore from "../stores/tokenStore.js";
 
     export let params;
 
-    let username = "";
+    let email = "";
     let password = "";
-
-    function handleLogin() {
-
-        console.log("Logging in with username:", username);
+    let errorMessage = "";
+    async function handleLogin() {
+        try {
+            const response = await fetch('http://localhost:3000/tokens', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({email: email, password: password})
+            });
+            if (response.ok){
+                const data = await response.json();
+                console.log(data);
+                $tokenStore.token = data.token;
+                router('/');
+                console.log('Logged in');
+                console.log("Logging in with email:", email);
+            } else {
+                errorMessage = "Invalid credentials."
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
+
 </script>
 
 <main>
     <h2>Login</h2>
-    <form on:submit={handleLogin}  class="login-form">
+    <form on:submit|preventDefault={handleLogin}  class="login-form">
 
         <div class="form-group">
-        <label for="username" >Username:</label>
-        <input type="text" id="username" bind:value={username} class="form-control" />
+        <label for="email" >Email:</label>
+        <input type="text" id="email" bind:value={email} class="form-control" />
         </div>
         <div class="form-group">
         <label for="password">Password:</label>

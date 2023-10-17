@@ -1,17 +1,22 @@
 <script>
     import  'font-awesome/css/font-awesome.css';
     import logo from '../assets/logo1nb.png';
+    import tokenStore from "../stores/tokenStore.js";
+    import {isLoggedIn} from "../utils/token-utils.js";
+    import router from "page";
+    import {isAdmin} from "../utils/token-utils.js";
+
     export let active;
 
     let searchTerm = '';
     let isAuthenticated = false;
-
     function handleSearch() {
+        // FIXME : search occurs on every press of the button
         console.log("Searching for: " + searchTerm);
     }
 
     function handleLogout() {
-        isAuthenticated = false;
+        $tokenStore.token = '';
     }
 
     function handleLogin() {
@@ -23,20 +28,25 @@
 <header>
     <nav>
         <ul>
-            <li><a class:active={active === "/"} href="/"><img src={logo} alt="Auction site logo"></a></li>
+            <li><a class:active={active === "/"} on:click={() => router(`/`)}><img src={logo} alt="Auction site logo"></a></li>
 <!--            <li><a class:active={active === "/about"} href="/about">About</a></li>-->
-            <li class="searchBar">
-                <input type="text" class="searchInput"  bind:value={searchTerm} on:input={handleSearch}>
-                <button class="searchButton" on:click={handleSearch}>Search</button>
-            </li>
+            {#if active === "/"}
+                <li class="searchBar">
+                    <input type="text" class="searchInput"  bind:value={searchTerm} on:input={handleSearch}>
+                    <button class="searchButton" on:click={handleSearch}>Search</button>
+                </li>
+            {/if}
             <li>
-                {#if isAuthenticated}
-                    <button on:click={handleLogout}>Logout</button>
+                {#if $tokenStore.token !== ''}
+                    <a class="navLink" on:click={handleLogout}>Logout</a>
                 {:else}
-                    <a class:active={active === "/login"} href="login" class="navLink">Login</a>
-                    <a class:active={active === "/register"} href="register" class="navLink">Register</a>
+                    <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Login</a>
+                    <a class:active={active === "/register"} on:click={() => router(`/register`)} class="navLink">Register</a>
                 {/if}
             </li>
+            {#if isAdmin($tokenStore.token)}
+                <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Admin Panel</a>
+            {/if}
         </ul>
     </nav>
 </header>

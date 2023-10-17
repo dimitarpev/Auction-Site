@@ -85,6 +85,7 @@ client.test(
             client.assert(antique.year === 1760, "Year variable not assigned correctly");
             client.assert(antique.material === "porcelain", "Material variable not assigned correctly");
             client.assert(antique.description === "old vase", "Description variable not assigned correctly");
+            //remove start end - asset if end after start
             client.assert(antique.startTime === Date.now(), "StartTime variable not assigned correctly");
             client.assert(antique.endTime === Date.now() + 3, "EndTime variable not assigned correctly");
             client.assert(antique.startingPrice === 800, "StartingPrice variable not assigned correctly");

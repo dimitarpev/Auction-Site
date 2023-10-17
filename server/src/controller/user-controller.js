@@ -1,11 +1,16 @@
 import statusCodes from "http-status-codes";
+import isEmail from 'validator/lib/isEmail.js';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import {secret} from "../utils/utils.js";
 
-let users = [
+export let users = [
     {
+        userId: 1,
         username: "djimi",
         email: "djimi2992@outlook.com",
-        password: "111111",
-        isAdmin: false
+        password: "$2a$10$AePid2lOjHBNwl56WMVOe.CnR6LCDH/BBPG9BvoOkWcisePUB0Pfi", //password: 111111
+        isAdmin: true
     }
 ]
 
@@ -15,9 +20,8 @@ export function getAllUsers(req, res) {
 
 
 export function getSpecificUser(req, res) {
-    const username = req.params.username;
-
-    const specificUser = users.find(user => user.username === username);
+    const userId = req.params.email;
+    const specificUser = users.find(user => user.email === userId);
 
     if (specificUser) {
         res.json(specificUser);
@@ -25,35 +29,61 @@ export function getSpecificUser(req, res) {
         res.status(statusCodes.NOT_FOUND).json({error: 'User not found'});
     }
 }
-
+function isValidEmail(email) {
+    return isEmail(email);
+}
 export function addUser(req, res) {
     const user = req.body;
-    const errors = [];
+    user.isAdmin = false;
+    const {email, username, password} = req.body;
 
-    //Check if any of the fields are empty
-    if (!("username" in user) || user.username === '') {
-        errors.push("No username in user");
+    const errors = [];
+    // const email = req.params.email;
+    // const username = req.params.username;
+    // const password = req.params.password;
+
+    if (!isValidEmail(email)) {
+        errors.push("Email is not valid!");
     }
-    if (!("email" in user) || user.email === ''){
-        errors.push("No email in user");
+    const specificUser = users.find(userInArray => userInArray.email === email || userInArray.username === username);
+    if (specificUser) {
+        errors.push("User already exists");
     }
-    if (!("password" in user) || user.password === '') {
-        errors.push("No password in user");
-    }
-    if (!("isAdmin" in user)){
-        errors.push("No isAdmin in user");
+
+    // //Check if any of the fields are empty
+    const requiredFields = ['username', 'email', 'password', 'isAdmin'];
+    for (const field of requiredFields) {
+        if (!(field in user) || user[field] === '') {
+            errors.push(`No ${field} in user`);
+        }
     }
     if (errors.length > 0){
         return res.status(statusCodes.BAD_REQUEST).json({error: errors});
     }
 
-    users.push(user);
-    console.log(user);
-    res.status(statusCodes.CREATED).json({message: 'User was added!'});
+    bcrypt.hash(password, 10, (err, hash) => {
+        if (err){
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error hashing the password.'});
+        }
+
+        user.password = hash;
+
+        users.push(user);
+        console.log(user);
+        // res.status(statusCodes.CREATED).json({message: 'User was added!'});
+        jwt.sign({email: user.email, isAdmin: user.isAdmin}, secret, (error, result) => {
+            if (error) {
+                return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error creating the JWT.'});
+            }
+            res.status(statusCodes.CREATED).json({token: result});
+        })
+    });
+
+
 }
 export function editUser(req,res) {
     const user = req.body;
-    const username = req.params.username
+    const email = req.params.email
     const errors = [];
 
     //Check if any of the fields are empty
@@ -73,7 +103,7 @@ export function editUser(req,res) {
         return res.status(statusCodes.BAD_REQUEST).json({error: errors});
     }
 
-    const userIndex = users.findIndex(user => user.username === username);
+    const userIndex = users.findIndex(user => user.email === email);
 
     users[userIndex] = {
         ...users[userIndex],
@@ -85,9 +115,9 @@ export function editUser(req,res) {
 
 export function deleteUser(req,res) {
     const user = req.body;
-    const username = req.params.username;
+    const email = req.params.email;
     console.log(user);
-    const userIndex = users.findIndex(user => user.username === username);
+    const userIndex = users.findIndex(user => user.email === email);
     if (userIndex !== -1) {
         const deletedUser = users.splice(userIndex, 1)[0];
         res.json({ message: 'User was deleted', deletedUser });
