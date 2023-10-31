@@ -3,12 +3,13 @@
 
 
   import Home from "./pages/Home.svelte";
-  import About from "./pages/About.svelte";
   import Header from "./components/Header.svelte";
   import LogIn from "./pages/LogIn.svelte";
   import Register from "./pages/Register.svelte";
   import AuctionPage from "./pages/AuctionPage.svelte";
   import CreateAuction from "./pages/CreateAuction.svelte";
+  import Winnings from "./pages/Winnings.svelte";
+  import EditAuction from "./pages/EditAuction.svelte";
 
   let page;
   let params;
@@ -16,10 +17,6 @@
 
   router('/', (ctx) => {
     page = Home;
-    currentRoute = ctx.pathname;
-  });
-  router('/about', (ctx) => {
-    page = About;
     currentRoute = ctx.pathname;
   });
   router('/login', (ctx) => {
@@ -39,6 +36,15 @@
     page = CreateAuction;
     currentRoute = ctx.pathname;
   });
+  router('/editAuction/:id', (ctx) => {
+    page = EditAuction;
+    currentRoute = ctx.pathname;
+    params = ctx.params;
+  })
+  router('/winnings', (ctx) => {
+    page = Winnings;
+    currentRoute = ctx.pathname;
+  })
 
   router.start();
 </script>

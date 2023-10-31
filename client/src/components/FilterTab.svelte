@@ -6,6 +6,8 @@
     import YearSlider from "../lib/YearSlider.svelte";
     import {createEventDispatcher} from "svelte";
     import filterStore from "../stores/filterStore.js";
+    import {filterMaterialOptions} from "../utils/filter-utils.js";
+    import {filterOriginOptions} from "../utils/filter-utils.js";
 
     const dispatch = createEventDispatcher();
     let sliderValue = 0;
@@ -13,8 +15,8 @@
     let filteredOrigin = '';
     let filteredCentury = '';
     // Filter options
-    let filterMaterialOptions = ["All", "Bronze", "Gold", "Iron"];
-    let filterOriginOptions = ["All", "Bulgaria", "Netherlands", "Greece"];
+    // let filterMaterialOptions = ["All", "Bronze", "Gold", "Iron", "Porcelain"];
+    // let filterOriginOptions = ["All", "Bulgaria", "Netherlands", "Greece"];
 
 
     function handleFilterApply() {

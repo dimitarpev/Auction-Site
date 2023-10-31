@@ -3,15 +3,9 @@
     import tokenStore from "../stores/tokenStore.js";
     import router from "page";
     import filterStore from "../stores/filterStore.js";
-    let now = new Date();
-    now.setDate(now.getDate() + 3);
-    const endTime = now.getTime();
+    import {isAdmin, isLoggedIn} from "../utils/token-utils.js";
 
-    let auctions = [];
-
-    // loadAntiques($filterStore.origin, $filterStore.material);
-
-    async function loadAntiques(origin, material, year){
+    async function loadAntiques(origin, material, year, search){
         try {
             const params = new URLSearchParams();
             if (origin !== '') {
@@ -23,6 +17,9 @@
             if (year !== 0){
                 params.append('year', year);
             }
+            if (search !== ''){
+                params.append('search', search);
+            }
             const queryString = params.toString();
             const url = queryString ? `http://localhost:3000/antiques?${queryString}` : 'http://localhost:3000/antiques';
             const response = await fetch(url);
@@ -31,7 +28,8 @@
                 console.log(data);
                 return data;
             } else {
-                console.log("There is an error");
+                const errorData = await response.json();
+                console.error(`Error: ${response.status} - ${errorData.error}`);
             }
         } catch (e) {
             console.log(e);
@@ -42,20 +40,22 @@
 </script>
 
 <div class="auctionsTab">
-    {#if $tokenStore.token !== ''}
+<!--    Place an auction button appears only if logged in and admin-->
+    {#if isLoggedIn($tokenStore.token) && isAdmin($tokenStore.token)}
         <div class="placeAuction">
             <label for="placeAuctionButton">Place an auction</label>
             <button id="placeAuctionButton" on:click={() => router(`/createAuction`)}>+</button>
         </div>
     {/if}
 
-    {#await loadAntiques($filterStore.origin, $filterStore.material, $filterStore.year)}
+    {#await loadAntiques($filterStore.origin, $filterStore.material, $filterStore.year, $filterStore.search)}
         <p>Loading...</p>
+
     {:then antiques}
 
-    {#each antiques as auction}
-        <AuctionItem auctionItem={auction}/>
-    {/each}
+        {#each antiques as auction}
+            <AuctionItem auctionItem={auction}/>
+        {/each}
 
     {:catch error}
         <p>Error!: {error}</p>
@@ -73,5 +73,32 @@
         justify-content: space-evenly;
         align-items: baseline;
         padding-bottom: 2em;
+    }
+    .placeAuction {
+        margin-top: 1em;
+        text-align: center;
+    }
+    label {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-right: 1em;
+    }
+    button {
+        font-size: 1.2em;
+        padding: 0.5em 1em;
+        background-color: #000000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #fff;
+        color: #000;
+    }
+    button:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
     }
 </style>

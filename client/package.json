@@ -17,6 +17,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "font-awesome": "^4.7.0",
+    "jsonwebtoken": "^9.0.2",
     "page": "^1.11.6",
     "svelte-fa": "^3.0.4"
   }

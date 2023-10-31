@@ -2,6 +2,7 @@
     import router from 'page';
     import Button from "../lib/Button.svelte";
     import tokenStore from "../stores/tokenStore.js";
+    import ErrorMessage from "../lib/ErrorMessage.svelte";
 
     export let params;
 
@@ -22,7 +23,6 @@
                 console.log(data);
                 $tokenStore.token = data.token;
                 router('/');
-                console.log('Logged in');
                 console.log("Logging in with email:", email);
             } else {
                 errorMessage = "Invalid credentials."
@@ -45,6 +45,9 @@
         <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" bind:value={password} class="form-control" />
+        </div>
+        <div class="form-group">
+            <ErrorMessage errorMessage={errorMessage}/>
         </div>
         <Button text="Login" onClick={handleLogin}/>
     </form>

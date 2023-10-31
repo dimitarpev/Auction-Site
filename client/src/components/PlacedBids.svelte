@@ -3,13 +3,16 @@
 
     export let antique;
 
-
     async function loadBids() {
         try {
             const response = await fetch('http://localhost:3000/antiques/' + antique.id + '/bids');
-            const data = await response.json();
-            console.log(data);
-            return data;
+            if (response.ok){
+                const data = await response.json();
+                return data;
+            } else {
+                const errorData = await response.json();
+                console.error(`Error: ${response.status} - ${errorData.error}`);
+            }
         } catch (e) {
             console.log(e);
             throw e;
@@ -26,8 +29,8 @@
         {#if bids.length === 0}
             <p>No bids yet!</p>
         {/if}
-        {#each bids as bid}
-            <BidItem bid={bid}/>
+        {#each bids as bid, index}
+            <BidItem bid={bid} bidNumber={index + 1}/>
         {/each}
    </div>
 {:catch error}
@@ -35,27 +38,22 @@
 {/await}
 
 <style>
-    /* width */
     ::-webkit-scrollbar {
         width: 0;
     }
 
-    /* Track */
     ::-webkit-scrollbar-track {
         background: #f1f1f1;
     }
 
-    /* Handle */
     ::-webkit-scrollbar-thumb {
         background: #888;
     }
 
-    /* Handle on hover */
     ::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
     .placedBids {
-        /*border: #cccccc 1px solid;*/
         text-align: center;
         overflow: auto;
         height: 40vh;
@@ -69,9 +67,9 @@
         display: block;
         position: relative;
         border: solid 3px #6e7491;
-        padding: 40px 60px;
+        padding: 40px 8%;
         max-width: 800px;
-        width: 70%;
+        width: 80%;
         margin: 100px auto 0;
         font-size: 17px;
         line-height: 28px;

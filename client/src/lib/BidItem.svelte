@@ -1,32 +1,56 @@
 <script>
-    export let bid;
+    import {isAdmin} from "../utils/token-utils.js";
+    import tokenStore from "../stores/tokenStore.js";
 
-    async function loadUser() {
-        try {
-            const response = await fetch('http://localhost:3000/users/' + bid.userEmail);
-            const data = await response.json();
-            console.log(data);
-            return data.username;
-        } catch (e) {
-            console.log(e);
-            throw e;
-        }
+    export let bid;
+    export let bidNumber;
+
+    function formatDateTime(dateTime) {
+        return new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        }).format(new Date(dateTime));
     }
+
+    async function deleteBid() {
+        try {
+            const response = await fetch('http://localhost:3000/antiques/' + bid.antiqueId + '/bids/' + bid.id, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': `Bearer ${$tokenStore.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: bid})
+            });
+            if (response.ok){
+                const data = await response.json();
+                console.log(data);
+            } else {
+                const errorData = await response.json();
+                console.error(`Error: ${response.status} - ${errorData.error}`);
+            }
+        } catch (e){
+            console.log(e);
+        }
+
+    }
+
+
 </script>
 
 
 <div class="personPlacedBid">
-    {#await loadUser()}
-        <p>Loading...</p>
-    {:then username}
-        <div class="individualBid">
-            <p class="bidName">Bid by: {username}</p>
-            <p class="bidRow2">Amount: {bid.amount}  Date: {bid.dateTime}</p>
-        </div>
-    {:catch error}
-        <p>Error!! {error}</p>
-    {/await}
-
+    <div class="individualBid">
+        {#if isAdmin($tokenStore.token)}
+            <span class="deleteBid" on:click={deleteBid}>X</span>
+        {/if}
+        <p class="bidName">Bid number: {bidNumber}</p>
+        <p class="bidRow2">Amount: {bid.amount}  Date: {formatDateTime(bid.dateTime)}</p>
+    </div>
 </div>
 
 <style>
@@ -46,6 +70,15 @@
         line-height: 0.5em;
     }
     .bidRow2 {
+        line-height: 1em;
+    }
+    .deleteBid {
         line-height: 0.5em;
+        display: flex;
+        justify-content: left;
+        padding-left: 1em;
+        padding-top: 0.5em;
+        margin-left: auto;
+        cursor: pointer;
     }
 </style>

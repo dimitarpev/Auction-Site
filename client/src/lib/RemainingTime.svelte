@@ -20,12 +20,32 @@
     }
 
 
+    async function announceWinner() {
+        try {
+            const response = await fetch(`http://localhost:3000/antiques/${antique.id}/bids`);
+            if (response.ok){
+                const data = await response.json();
+                const winnerBid = data.reduce((maxBid, currentBid) => {
+                    return currentBid.amount > maxBid.amount ? currentBid : maxBid;
+                }, { amount: -Infinity });
+
+                console.log('Winner Bid:', winnerBid);
+            } else {
+                const errorData = await response.json();
+                console.error(`Error: ${response.status} - ${errorData.error}`);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     // Update the remaining time every second
     const interval = setInterval(() => {
         remainingTime = antique.endTime - Date.now();
         if (remainingTime <= 0) {
             clearInterval(interval);
+            remainingTime = 0;
+            announceWinner();
         }
     }, 1000);
 </script>
@@ -36,8 +56,8 @@
     {:else}
         <span>Time left:</span>
         <p class="timeLeft">
-            {remainingTime > 86400000 ? `${formatTime(remainingTime).days} days ` : ''}
-            {formatTime(remainingTime).hours} hours {formatTime(remainingTime).minutes} minutes
+            {remainingTime > 86400000 ? `${formatTime(remainingTime).days}d : ` : ''}
+            {formatTime(remainingTime).hours}h : {formatTime(remainingTime).minutes}m : {formatTime(remainingTime).seconds}s
         </p>
     {/if}
 </div>

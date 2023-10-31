@@ -4,7 +4,7 @@
     export let onClick;
 </script>
 
-<button on:click={onClick}>{text}</button>
+<button on:click|preventDefault={onClick}>{text}</button>
 
 <style>
     button {
@@ -15,7 +15,6 @@
         cursor: pointer;
         top: 50%;
         left: 50%;
-        /*position: relative;*/
     }
 </style>
 

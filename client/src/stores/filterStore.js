@@ -3,5 +3,6 @@ import {writable} from "svelte/store";
 export default writable({
     material: '',
     origin: '',
-    year: 0
+    year: 0,
+    search: ''
 });

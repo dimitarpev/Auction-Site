@@ -5,13 +5,13 @@
     import {isLoggedIn} from "../utils/token-utils.js";
     import router from "page";
     import {isAdmin} from "../utils/token-utils.js";
+    import filterStore from "../stores/filterStore.js";
 
     export let active;
 
     let searchTerm = '';
-    let isAuthenticated = false;
     function handleSearch() {
-        // FIXME : search occurs on every press of the button
+        $filterStore.search = searchTerm;
         console.log("Searching for: " + searchTerm);
     }
 
@@ -19,9 +19,6 @@
         $tokenStore.token = '';
     }
 
-    function handleLogin() {
-
-    }
 
 </script>
 
@@ -29,53 +26,39 @@
     <nav>
         <ul>
             <li><a class:active={active === "/"} on:click={() => router(`/`)}><img src={logo} alt="Auction site logo"></a></li>
-<!--            <li><a class:active={active === "/about"} href="/about">About</a></li>-->
+            {#if isLoggedIn($tokenStore.token)}
+                <li class="winnings">
+                    <a class:active={active === "/winnings"} on:click={() => router('/winnings')}>Winnings</a>
+                </li>
+            {/if}
             {#if active === "/"}
                 <li class="searchBar">
-                    <input type="text" class="searchInput"  bind:value={searchTerm} on:input={handleSearch}>
+                    <input type="text" class="searchInput"  bind:value={searchTerm}>
                     <button class="searchButton" on:click={handleSearch}>Search</button>
                 </li>
             {/if}
             <li>
-                {#if $tokenStore.token !== ''}
+                {#if isLoggedIn($tokenStore.token)}
                     <a class="navLink" on:click={handleLogout}>Logout</a>
                 {:else}
                     <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Login</a>
                     <a class:active={active === "/register"} on:click={() => router(`/register`)} class="navLink">Register</a>
                 {/if}
             </li>
-            {#if isAdmin($tokenStore.token)}
-                <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Admin Panel</a>
-            {/if}
+            <!--{#if isAdmin($tokenStore.token)}-->
+            <!--    <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Admin Panel</a>-->
+            <!--{/if}-->
         </ul>
     </nav>
 </header>
 
 <style>
-    /*ul {*/
-    /*    list-style-type: none;*/
-    /*    display: flex;*/
-    /*    justify-content: space-evenly;*/
-    /*    flex-direction: row;*/
-    /*    align-items: center;*/
-    /*}*/
-
-    /*a.active {*/
-    /*    font-weight: bold;*/
-    /*}*/
-
-    /*img {*/
-    /*    height: 10rem;*/
-    /*    width: 10rem;*/
-    /*}*/
-    /*nav {*/
-
-    /*}*/
     header {
-        background-color: #fff; /* Background color for the header */
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-        border-bottom: 2px solid coral; /* Add a bottom border with a highlight color */
-        padding: 1rem 0; /* Add some padding for separation from content below */
+        background-color: #fff;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        border-bottom: 2px solid coral;
+        padding: 1rem 0;
+
 
     }
     ul {
@@ -97,7 +80,7 @@
     img {
         height: 9rem;
         width: 9rem;
-        padding-left: 2em;
+        padding-left: 1em;
     }
 
     .searchBar {
@@ -118,7 +101,7 @@
         border-radius: 4px;
         margin-right: 0.5rem;
         flex-grow: 1;
-        font-size: 1.2rem; /* Increase font size */
+        font-size: 1.2rem;
     }
 
     .searchButton {
@@ -128,7 +111,7 @@
         border-radius: 4px;
         padding: 0.5rem 1rem;
         cursor: pointer;
-        font-size: 1.2rem; /* Increase font size */
+        font-size: 1.2rem;
     }
 
     .searchButton i {
@@ -142,16 +125,20 @@
         border-radius: 4px;
         padding: 0.5rem 1rem;
         cursor: pointer;
-        font-size: 1.2rem; /* Increase font size */
+        font-size: 1.2rem;
     }
 
     .navLink {
         text-decoration: none;
         color: #333;
         margin: 0 10px;
-        font-size: 1.2rem; /* Increase font size */
+        font-size: 1.2rem;
     }
     li {
         padding-right: 15%;
+    }
+    .winnings {
+        padding: 2%;
+        margin: 0;
     }
 </style>

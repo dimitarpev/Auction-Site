@@ -3,6 +3,7 @@
     import tokenStore from '../stores/tokenStore.js';
 
     import Button from "../lib/Button.svelte";
+    import ErrorMessage from "../lib/ErrorMessage.svelte";
     export let params;
 
     let username = "";
@@ -28,7 +29,6 @@
             if (response.ok) {
                 const data = await response.json();
                 console.log('data after registering', data);
-                // assumes: data = {token: 'eyas.dfasdfasdfadsfasd.asdfadfs'}
                 $tokenStore.token = data.token;
                 router('/');
                 console.log("Registering with username:", username);
@@ -60,7 +60,7 @@
             <input type="password" id="password" bind:value={password} class="form-control" />
         </div>
         <div>
-            {errorMessage}
+            <ErrorMessage errorMessage={errorMessage}/>
         </div>
         <Button text="Register" onClick={handleRegister}/>
     </form>

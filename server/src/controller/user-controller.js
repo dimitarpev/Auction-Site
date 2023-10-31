@@ -20,8 +20,8 @@ export function getAllUsers(req, res) {
 
 
 export function getSpecificUser(req, res) {
-    const userId = req.params.email;
-    const specificUser = users.find(user => user.email === userId);
+    const email = req.params.email;
+    const specificUser = users.find(user => user.email === email);
 
     if (specificUser) {
         res.json(specificUser);
@@ -29,6 +29,7 @@ export function getSpecificUser(req, res) {
         res.status(statusCodes.NOT_FOUND).json({error: 'User not found'});
     }
 }
+
 function isValidEmail(email) {
     return isEmail(email);
 }
@@ -47,7 +48,7 @@ export function addUser(req, res) {
     }
     const specificUser = users.find(userInArray => userInArray.email === email || userInArray.username === username);
     if (specificUser) {
-        errors.push("User already exists");
+        errors.push("Username/Email is already taken");
     }
 
     // //Check if any of the fields are empty

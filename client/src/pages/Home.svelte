@@ -4,12 +4,7 @@
     export let params;
 
     // How to make filter sticky
-    // Use centuries instead of years
-    // back end?
-    let filters = [];
-    function processFiltration() {
 
-    }
 </script>
 
 <div class="container">
