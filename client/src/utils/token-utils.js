@@ -1,4 +1,3 @@
-import tokenStore from '../stores/tokenStore.js';
 
 export function isLoggedIn(token) {
     return token && token !== '';

@@ -104,4 +104,10 @@
     .adminButtons {
         position: relative;
     }
+    @media screen and (max-width: 1000px){
+        .antiqueItem {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
 </style>

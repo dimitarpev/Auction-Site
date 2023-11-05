@@ -1,9 +1,5 @@
 ### Get all the antiques
 GET {{protocol}}{{host}}:{{port}}/antiques
-//content-type - is if it takes a body and is not required
-//filter tests
-// no bad weather for getting list of antiques
-// login and authorization tests later on
 
 > {%
 client.test(

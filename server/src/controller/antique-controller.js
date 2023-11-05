@@ -3,7 +3,6 @@ import {v4 as uuidv4} from 'uuid';
 import {antiques} from "../utils/utils.js";
 
 export function getAllAntiques(req, res) {
-    // TODO: write test cases for filtering
     const origin = req.query.origin;
     const material = req.query.material;
     const year = Number(req.query.year);

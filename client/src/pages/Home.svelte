@@ -3,7 +3,6 @@
     import AuctionsTab from "../components/AuctionsTab.svelte";
     export let params;
 
-    // How to make filter sticky
 
 </script>
 

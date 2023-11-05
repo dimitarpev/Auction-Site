@@ -89,7 +89,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "123124",
+  "username": 123124,
   "email": "jack@gmail.com",
   "password": "12345678",
   "isAdmin": false

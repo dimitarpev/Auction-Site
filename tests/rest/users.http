@@ -1,7 +1,6 @@
 ### Get all the users
 GET {{protocol}}{{host}}:{{port}}/users
 Authorization: Bearer {{admin_token}}
-// login and authorization tests later on
 
 > {%
     client.test(
@@ -75,7 +74,7 @@ Content-Type: application/json
             const user = JSON.parse(request.body());
             client.assert(user.username === "kevin", "Username variable not assigned correctly");
             client.assert(user.email === "kevin@kevin.com", "Email variable not assigned correctly");
-            client.assert(user.password === "$2a$10$AePid2lOjHBNwl56WMVOe.CnR6LCDH/BBPG9BvoOkWcisePUB0Pfi", "Password variable not assigned correctly");
+            client.assert(user.password === "111111", "Password variable not assigned correctly");
             client.assert(user.isAdmin === false, "IsAdmin variable not assigned correctly");
         }
     )

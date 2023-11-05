@@ -43,9 +43,6 @@ export function addUser(req, res) {
     const {email, username, password} = req.body;
 
     const errors = [];
-    // const email = req.params.email;
-    // const username = req.params.username;
-    // const password = req.params.password;
 
     if (!isValidEmail(email)) {
         errors.push("Email is not valid!");
@@ -80,7 +77,6 @@ export function addUser(req, res) {
         user.password = hash;
 
         users.push(user);
-        // res.status(statusCodes.CREATED).json({message: 'User was added!'});
         jwt.sign({email: user.email, isAdmin: user.isAdmin}, secret, (error, result) => {
             if (error) {
                 return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error creating the JWT.'});

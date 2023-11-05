@@ -101,7 +101,7 @@ Authorization: Bearer {{user_token}}
     client.test(
         "Create new bid for an antique",
         function () {
-            client.assert(response.status === 400, `Expected response code 400 when placing a bid, but received ${response.status}`);
+            client.assert(response.status === 404, `Expected response code 404 when placing a bid, but received ${response.status}`);
         }
     )
 %}

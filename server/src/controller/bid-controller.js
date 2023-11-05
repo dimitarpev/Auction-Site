@@ -70,9 +70,8 @@ export function addBid(req, res) {
         errors.push("No antiqueId in bid");
     }
 
-    const antique = antiques.filter(antique => antique.id === bid.antiqueId);
-    console.log(antique.endTime);
-    console.log(Date.now());
+    const antique = antiques.find(antique => antique.id === bid.antiqueId);
+
     if (!antique) {
         return res.status(statusCodes.NOT_FOUND).json({error: "Antique to place a bid to not found"});
     }
@@ -108,7 +107,7 @@ export function deleteBid(req,res) {
     const bidId = Number(req.params.id);
     const antiqueId = req.params.antiqueId;
     const bidIndex = bids.findIndex(bid => bid.antiqueId === antiqueId && bid.id === bidId);
-    const antique = antiques.filter(antique => antique.id === antiqueId);
+    const antique = antiques.find(antique => antique.id === antiqueId);
     if (antique.endTime <= Date.now()){
         return res.status(statusCodes.BAD_REQUEST).json({error: "Cannot delete bid from auction that has ended"})
     }
