@@ -28,8 +28,6 @@
                 const winnerBid = data.reduce((maxBid, currentBid) => {
                     return currentBid.amount > maxBid.amount ? currentBid : maxBid;
                 }, { amount: -Infinity });
-
-                console.log('Winner Bid:', winnerBid);
             } else {
                 const errorData = await response.json();
                 console.error(`Error: ${response.status} - ${errorData.error}`);
@@ -39,7 +37,6 @@
         }
     }
 
-    // Update the remaining time every second
     const interval = setInterval(() => {
         remainingTime = antique.endTime - Date.now();
         if (remainingTime <= 0) {

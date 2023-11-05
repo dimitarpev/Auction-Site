@@ -21,7 +21,6 @@
             if (response.ok){
                 const data   = await response.json();
                 router('/');
-                console.log(data);
             } else {
                 const errorData = await response.json();
                 console.error(`Error: ${response.status} - ${errorData.error}`);
@@ -39,8 +38,10 @@
         <div class="leftAntiquePart">
             <img src={antique.image} alt={antique.name}>
             {#if isLoggedIn($tokenStore.token) && isAdmin($tokenStore.token)}
-                <Button text="Edit auction" onClick={() => router(`/editAuction/${antique.id}`)}/>
-                <Button text="Delete auction" onClick={deleteAuction}/>
+                <div class="adminButtons">
+                    <Button text="Edit auction" onClick={() => router(`/editAuction/${antique.id}`)}/>
+                    <Button text="Delete auction" onClick={deleteAuction}/>
+                </div>
             {/if}
         </div>
         <div class="rightAntiquePart">
@@ -99,5 +100,8 @@
     }
     .auctionDescription {
         padding-bottom: 1em;
+    }
+    .adminButtons {
+        position: relative;
     }
 </style>

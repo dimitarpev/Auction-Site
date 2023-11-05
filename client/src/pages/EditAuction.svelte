@@ -31,7 +31,6 @@
             const response = await fetch('http://localhost:3000/antiques/' + params.id);
             if (response.ok){
                 const data = await response.json();
-                console.log(data);
                 antique = data;
                 return data;
             } else {
@@ -47,16 +46,16 @@
         try {
             switch (selectedEndTimeOption) {
                 case "1 minute":
-                    endTime = startTime + 60000; // 1 minute in milliseconds
+                    antique.endTime = antique.startTime + 60000; // 1 minute in milliseconds
                     break;
                 case "1 hour":
-                    endTime = startTime + 3600000; // 1 hour in milliseconds
+                    antique.endTime = antique.startTime + 3600000; // 1 hour in milliseconds
                     break;
                 case "24 hours":
-                    endTime = startTime + 86400000; // 24 hours in milliseconds
+                    antique.endTime = antique.startTime + 86400000; // 24 hours in milliseconds
                     break;
                 case "72 hours":
-                    endTime = startTime + 259200000; // 72 hours in milliseconds
+                    antique.endTime = antique.startTime + 259200000; // 72 hours in milliseconds
                     break;
                 default:
                     console.error("Invalid endTime option selected");
@@ -74,7 +73,6 @@
             if (response.ok){
                 const data   = await response.json();
                 router('/');
-                console.log(data);
             } else {
                 errorMessage = "Invalid input / All fields must be filled";
                 const errorData = await response.json();
@@ -93,63 +91,58 @@
         {#await loadAntique()}
             <p>Loading...</p>
         {:then antiquse}
-
-
-        <div class="form-group">
-            <label for="name" >Antique name:</label>
-            <input type="text" id="name" bind:value={antique.name} class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="type">Type:</label>
-            <input type="text" id="type" bind:value={antique.type} class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="origin">Origin:</label>
-            <!--            <input type="text" id="origin" bind:value={origin} class="form-control" />-->
-            <select id="origin" bind:value={antique.origin} class="form-control">
-                {#each filterOriginOptions as filter}
-                    <option>{filter}</option>
-                {/each}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="year">Year:</label>
-            <input type="text" id="year" bind:value={antique.year} class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="material">Material:</label>
-            <!--            <input type="text" id="material" bind:value={material} class="form-control" />-->
-            <select id="material" bind:value={antique.material} class="form-control">
-                {#each filterMaterialOptions as filter}
-                    <option>{filter}</option>
-                {/each}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="description">Description:</label>
-            <input type="text" id="description" bind:value={antique.description} class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="endTime">End Time:</label>
-            <!--            <input type="text" id="endTime" bind:value={endTime} class="form-control" />-->
-            <select id="endTime" bind:value={selectedEndTimeOption} class="form-control">
-                {#each endTimeSelections as filter}
-                    <option>{filter}</option>
-                {/each}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="startingPrice">Starting Price:</label>
-            <input type="text" id="startingPrice" bind:value={antique.startingPrice} class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="image">Image:</label>
-            <input type="text" id="image" bind:value={antique.image} class="form-control" />
-        </div>
-        <div class="form-group">
-            <ErrorMessage errorMessage={errorMessage}/>
-        </div>
-        <Button text="Create" onClick={handleAuctionEdit}/>
+            <div class="form-group">
+                <label for="name" >Antique name:</label>
+                <input type="text" id="name" bind:value={antique.name} class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="type">Type:</label>
+                <input type="text" id="type" bind:value={antique.type} class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="origin">Origin:</label>
+                <select id="origin" bind:value={antique.origin} class="form-control">
+                    {#each filterOriginOptions as filter}
+                        <option>{filter}</option>
+                    {/each}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="text" id="year" bind:value={antique.year} class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="material">Material:</label>
+                <select id="material" bind:value={antique.material} class="form-control">
+                    {#each filterMaterialOptions as filter}
+                        <option>{filter}</option>
+                    {/each}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" bind:value={antique.description} class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="endTime">End Time:</label>
+                <select id="endTime" bind:value={selectedEndTimeOption} class="form-control">
+                    {#each endTimeSelections as filter}
+                        <option>{filter}</option>
+                    {/each}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="startingPrice">Starting Price:</label>
+                <input type="text" id="startingPrice" bind:value={antique.startingPrice} class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="text" id="image" bind:value={antique.image} class="form-control" />
+            </div>
+            <div class="form-group">
+                <ErrorMessage errorMessage={errorMessage}/>
+            </div>
+            <Button text="Edit" onClick={handleAuctionEdit}/>
         {/await}
     </form>
 </main>

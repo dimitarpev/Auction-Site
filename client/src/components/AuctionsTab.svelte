@@ -1,5 +1,5 @@
 <script>
-    import AuctionItem from "../lib/AuctionItem.svelte";
+    import AuctionItem from "./AuctionItem.svelte";
     import tokenStore from "../stores/tokenStore.js";
     import router from "page";
     import filterStore from "../stores/filterStore.js";
@@ -25,7 +25,6 @@
             const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 return data;
             } else {
                 const errorData = await response.json();
@@ -100,5 +99,11 @@
     button:active {
         box-shadow: 0 5px #666;
         transform: translateY(4px);
+    }
+    @media screen and (max-width: 1000px){
+        .auctionsTab {
+            flex-direction: column;
+            align-items: center;
+        }
     }
 </style>

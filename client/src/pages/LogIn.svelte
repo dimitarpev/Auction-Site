@@ -20,10 +20,8 @@
             });
             if (response.ok){
                 const data = await response.json();
-                console.log(data);
                 $tokenStore.token = data.token;
                 router('/');
-                console.log("Logging in with email:", email);
             } else {
                 errorMessage = "Invalid credentials."
             }

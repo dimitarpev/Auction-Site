@@ -28,12 +28,9 @@
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log('data after registering', data);
                 $tokenStore.token = data.token;
                 router('/');
-                console.log("Registering with username:", username);
             } else {
-                // TODO show error message, don't parse the response as JSON
                 errorMessage = "Invalid credentials."
             }
 

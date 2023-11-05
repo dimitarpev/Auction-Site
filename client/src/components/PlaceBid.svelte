@@ -5,7 +5,8 @@
     import {getEmail} from "../utils/token-utils.js";
     import ErrorMessage from "../lib/ErrorMessage.svelte";
 
-    export let startingAmount;
+    export let antique;
+     let startingAmount = antique.startingPrice;
     export let params;
 
     let bid = '';
@@ -30,7 +31,6 @@
                 if (response.ok){
                     errorMessage = '';
                     const data = await response.json();
-                    console.log(data);
                 } else {
                     errorMessage = 'Bid is invalid.';
                     const errorData = await response.json();
@@ -50,11 +50,13 @@
 <div class="placeBidContainer">
     <section class="placeBid">
 
-        {#if $tokenStore.token !== ''}
+        {#if $tokenStore.token !== '' && !(antique.endTime <= Date.now())}
             <label for="placeBid">Place bid:</label>
             <input type="text" id="placeBid" bind:value={bid}>
             <Button text="Submit" onClick={placeBid}/>
             <ErrorMessage errorMessage={errorMessage}/>
+        {:else if antique.endTime <= Date.now()}
+            <p>Auction ended! Bidding is closed.</p>
         {:else}
             <p>Please log in to place a bid!</p>
         {/if}

@@ -6,11 +6,15 @@ import {secret} from "../utils/utils.js";
 
 export let users = [
     {
-        userId: 1,
         username: "djimi",
         email: "djimi2992@outlook.com",
         password: "$2a$10$AePid2lOjHBNwl56WMVOe.CnR6LCDH/BBPG9BvoOkWcisePUB0Pfi", //password: 111111
         isAdmin: true
+    },
+    {
+        username: "someone",
+        email: "user@gmail.com",
+        password: "$2a$10$0hwqrXechxl/WkJyu2QJTueXBUX4hgy0cscFeboxyl4DCmlYql2mq" // password : 12345678
     }
 ]
 
@@ -46,17 +50,23 @@ export function addUser(req, res) {
     if (!isValidEmail(email)) {
         errors.push("Email is not valid!");
     }
+    if (typeof user['username'] !== 'string'  || typeof user['email'] !== 'string'){
+        errors.push("Username/Email need to contain letters and be strings.");
+    }
     const specificUser = users.find(userInArray => userInArray.email === email || userInArray.username === username);
     if (specificUser) {
         errors.push("Username/Email is already taken");
-    }
 
+    }
     // //Check if any of the fields are empty
     const requiredFields = ['username', 'email', 'password', 'isAdmin'];
     for (const field of requiredFields) {
         if (!(field in user) || user[field] === '') {
             errors.push(`No ${field} in user`);
         }
+    }
+    if (password.length < 6){
+        errors.push("Password needs to be at least 6 characters long");
     }
     if (errors.length > 0){
         return res.status(statusCodes.BAD_REQUEST).json({error: errors});
@@ -70,7 +80,6 @@ export function addUser(req, res) {
         user.password = hash;
 
         users.push(user);
-        console.log(user);
         // res.status(statusCodes.CREATED).json({message: 'User was added!'});
         jwt.sign({email: user.email, isAdmin: user.isAdmin}, secret, (error, result) => {
             if (error) {
@@ -81,48 +90,4 @@ export function addUser(req, res) {
     });
 
 
-}
-export function editUser(req,res) {
-    const user = req.body;
-    const email = req.params.email
-    const errors = [];
-
-    //Check if any of the fields are empty
-    if (!("username" in user) || user.username === '') {
-        errors.push("No username in user");
-    }
-    if (!("email" in user) || user.email === ''){
-        errors.push("No email in user");
-    }
-    if (!("password" in user) || user.password === '') {
-        errors.push("No password in user");
-    }
-    if (!("isAdmin" in user) || user.isAdmin === ''){
-        errors.push("No isAdmin in user");
-    }
-    if (errors.length > 0){
-        return res.status(statusCodes.BAD_REQUEST).json({error: errors});
-    }
-
-    const userIndex = users.findIndex(user => user.email === email);
-
-    users[userIndex] = {
-        ...users[userIndex],
-        ...user
-    };
-    console.log(users[userIndex]);
-    res.json({ message: 'User was updated!' });
-}
-
-export function deleteUser(req,res) {
-    const user = req.body;
-    const email = req.params.email;
-    console.log(user);
-    const userIndex = users.findIndex(user => user.email === email);
-    if (userIndex !== -1) {
-        const deletedUser = users.splice(userIndex, 1)[0];
-        res.json({ message: 'User was deleted', deletedUser });
-    } else {
-        res.status(statusCodes.NOT_FOUND).json({ error: 'User not found' });
-    }
 }

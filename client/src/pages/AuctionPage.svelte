@@ -9,7 +9,6 @@
           const response = await fetch('http://localhost:3000/antiques/' + params.id);
           if (response.ok){
               const data = await response.json();
-              console.log(data);
               return data;
           } else {
               const errorData = await response.json();
@@ -26,15 +25,12 @@
     <p>Loading...</p>
 {:then antique}
     <AuctionContainer antique={antique}/>
-    <PlaceBid startingAmount={antique.startingPrice} params={params}/>
+    <PlaceBid antique={antique} params={params}/>
 {:catch error}
     <p>Error!! {error}</p>
 {/await}
 
 
 <style>
-
-
-
 
 </style>

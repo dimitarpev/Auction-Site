@@ -1,24 +1,124 @@
 ###
-### Retrieve a token that can be used for calls requiring authentication
+POST {{protocol}}{{host}}:{{port}}/tokens
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "djimi2992@outlook.com",
+  "password": "111111"
+}
+
+> {%
+client.global.set("admin_token", response.body.token);
+%}
+
 ###
-POST {{protocol}}{{host}}:{{port}}/auth
+POST {{protocol}}{{host}}:{{port}}/users
 Content-Type: application/json
 Accept: application/json
 
 {
   "username": "user",
-  "password": "pass"
+  "email": "user@user.com",
+  "password": "12345678"
 }
 
 > {%
-client.global.set("token", "m1jnH3l3L4ng3en5uperV31l!geT0ken");
+client.global.set("user_token", response.body.token);
 %}
 
-
-###
-### Invalidate the token
-###
-DELETE {{protocol}}{{host}}:{{port}}/auth
+### Try to log in with wrong email
+POST {{protocol}}{{host}}:{{port}}/tokens
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer {{token}}
+
+{
+  "email": "noexistinguser@user.com",
+  "password": "12345678"
+}
+
+> {%
+client.test(
+    "No user found with specified credentials",
+    function(){
+   client.assert(response.status === 400, `Expected error code 400 when logging in with incorrect email, but received ${response.status}`);
+});
+%}
+
+### Try to log in with wrong password
+POST {{protocol}}{{host}}:{{port}}/tokens
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "djimi2992@outlook.com",
+  "password": "222222"
+}
+
+> {%
+    client.test(
+        "No user found with specified credentials",
+        function(){
+            client.assert(response.status === 400, `Expected error code 400 when logging in with incorrect password, but received ${response.status}`);
+        });
+%}
+
+### Try to register with invalid email
+POST {{protocol}}{{host}}:{{port}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "jack",
+  "email": "invalidemail",
+  "password": "12345678",
+  "isAdmin": false
+}
+
+> {%
+    client.test(
+        "Registering with invalid email",
+        function(){
+            client.assert(response.status === 400, `Expected error code 400 when registering with invalid email, but received ${response.status}`);
+        });
+%}
+
+### Try to register with invalid username
+POST {{protocol}}{{host}}:{{port}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "123124",
+  "email": "jack@gmail.com",
+  "password": "12345678",
+  "isAdmin": false
+}
+
+> {%
+    client.test(
+        "Registering with invalid username",
+        function(){
+            client.assert(response.status === 400, `Expected error code 400 when registering with invalid username, but received ${response.status}`);
+        });
+%}
+
+### Try to register with too short password
+POST {{protocol}}{{host}}:{{port}}/users
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "jack",
+  "email": "jack@gmail.com",
+  "password": "12345",
+  "isAdmin": false
+}
+
+> {%
+    client.test(
+        "Registering with invalid password",
+        function(){
+            client.assert(response.status === 400, `Expected error code 400 when registering with invalid password, but received ${response.status}`);
+        });
+%}

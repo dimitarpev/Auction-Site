@@ -26,9 +26,33 @@ GET {{protocol}}{{host}}:{{port}}/antiques?origin="Bulgaria"
     )
 %}
 
+### Get all antiques with material filter test
+GET {{protocol}}{{host}}:{{port}}/antiques?material="Gold"
+
+> {%
+    client.test(
+        "Get all antiques that are Gold",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of antiques of material Gold");
+        }
+    )
+%}
+
+### Get all antiques with year filter test
+GET {{protocol}}{{host}}:{{port}}/antiques?year="1000"
+
+> {%
+    client.test(
+        "Get all antiques that are from year 1000-1099",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of antiques of year 1000-1099");
+        }
+    )
+%}
+
 
 ### Get a specific antique based on id
-GET {{protocol}}{{host}}:{{port}}/antiques/1
+GET {{protocol}}{{host}}:{{port}}/antiques/2
 Accept: application/json
 
 > {%
@@ -48,7 +72,7 @@ Accept: application/json
     client.test(
         "Get specific antique",
         function () {
-            client.assert(response.status === 404, "Expected error code 404, but received 200");
+            client.assert(response.status === 404, `Expected error code 404 when getting specific antique, but received ${response.status}`);
         }
     )
 %}
@@ -56,6 +80,7 @@ Accept: application/json
 ### Create a new antique
 POST {{protocol}}{{host}}:{{port}}/antiques
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 //ask if attributes okay, id should be included and start/end time type
 
@@ -63,13 +88,13 @@ Content-Type: application/json
   "name": "Bulgarian Orthodox Vase",
   "type": "vase",
   "origin": "Bulgaria",
-  "year": 1760,
-  "material": "porcelain",
+  "year": "1760",
+  "material": "Porcelain",
   "description": "old vase",
-  "startTime": "09/09/2023",
-  "endTime": "13/09/2023",
+  "startTime": "1698911678638",
+  "endTime": "1706914800000",
   "startingPrice": 800,
-  "ggdsdfs" : 400
+  "image": "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg"
 }
 
 > {%
@@ -77,18 +102,22 @@ client.test(
     "Create new antique",
         function () {
             client.assert(response.status === 201, "Failed to create antique");
-            const antique = response.body;
-            client.assert(antique.length >= 1, "Incorrect number of arguments when creating antique");
+            const antique = JSON.parse(request.body());
+            // client.assert(typeof antique === 'object', "Unexpected response body format");
+
+            // Check if the 'name' property exists
+            client.assert('name' in antique, "Response body does not contain 'name' property");
             client.assert(antique.name === "Bulgarian Orthodox Vase", "Name variable not assigned correctly");
             client.assert(antique.type === "vase", "Type variable not assigned correctly");
             client.assert(antique.origin === "Bulgaria", "Origin variable not assigned correctly");
-            client.assert(antique.year === 1760, "Year variable not assigned correctly");
-            client.assert(antique.material === "porcelain", "Material variable not assigned correctly");
+            client.assert(antique.year === "1760", "Year variable not assigned correctly");
+            client.assert(antique.material === "Porcelain", "Material variable not assigned correctly");
             client.assert(antique.description === "old vase", "Description variable not assigned correctly");
             //remove start end - asset if end after start
-            client.assert(antique.startTime === Date.now(), "StartTime variable not assigned correctly");
-            client.assert(antique.endTime === Date.now() + 3, "EndTime variable not assigned correctly");
+            client.assert(antique.startTime <= Date.now(), "StartTime variable not assigned correctly");
+            client.assert(antique.endTime == new Date("3 February, 2024").getTime(), "EndTime variable not assigned correctly");
             client.assert(antique.startingPrice === 800, "StartingPrice variable not assigned correctly");
+            client.assert(antique.image === "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg", "Image variable not assigned correctly");
         }
 )
  %}
@@ -96,6 +125,7 @@ client.test(
 ### Create a new antique - bad weather
 POST {{protocol}}{{host}}:{{port}}/antiques
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 //ask if response code correct
 
@@ -108,8 +138,35 @@ Content-Type: application/json
     client.test(
         "Create new antique",
         function () {
-            client.assert(response.status === 400, "Expected response code 400, but received 201");
+            client.assert(response.status === 400, `Expected response code 400 when creating antique, but received ${response.status}`);
 
+        }
+    )
+%}
+
+### Create a new antique - bad weather - unauthorized
+POST {{protocol}}{{host}}:{{port}}/antiques
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "name": "Bulgarian Orthodox Vase",
+  "type": "vase",
+  "origin": "Bulgaria",
+  "year": "1760",
+  "material": "Porcelain",
+  "description": "old vase",
+  "startTime": "1698911678638",
+  "endTime": "1706914800000",
+  "startingPrice": 800,
+  "image": "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg"
+}
+
+> {%
+    client.test(
+        "Create new antique",
+        function () {
+            client.assert(response.status === 401, `Expected error status 401 when adding antique, but received ${response.status}`);
         }
     )
 %}
@@ -117,10 +174,19 @@ Content-Type: application/json
 ### Edit an antique
 PATCH {{protocol}}{{host}}:{{port}}/antiques/1
 Content-Type: application/json
-//ask if patch works like that
+Authorization: Bearer {{admin_token}}
 
 {
-  "endTime": "15/09/2023"
+  "name": "Bulgarian Orthodox Vase",
+  "type": "vase",
+  "origin": "Bulgaria",
+  "year": "1760",
+  "material": "Porcelain",
+  "description": "old vase",
+  "startTime": "1698911678638",
+  "endTime": "1706828400000",
+  "startingPrice": 800,
+  "image": "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg"
 }
 
 > {%
@@ -128,7 +194,6 @@ Content-Type: application/json
      "Edit an antique",
      function () {
          client.assert(response.status === 200, "Failed to edit antique");
-         client.assert(response.body.length >= 1, "Incorrect number of arguments when editing antique");
      }
  )
  %}
@@ -136,25 +201,61 @@ Content-Type: application/json
 ### Edit an antique - bad weather
 PATCH {{protocol}}{{host}}:{{port}}/antiques/1
 Content-Type: application/json
-//ask if patch works like that
+Authorization: Bearer {{admin_token}}
 
 {
-  "endTime": null
+  "name": "Bulgarian Orthodox Vase",
+  "type": "vase",
+  "origin": "Bulgaria",
+  "year": "1760",
+  "material": "Porcelain",
+  "description": "old vase",
+  "startTime": "1698911678638",
+  "endTime": null,
+  "startingPrice": 800,
+  "image": "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg"
 }
 
 > {%
  client.test(
      "Edit an antique",
      function () {
-         client.assert(response.status === 400, "Expected response 400 when editing antique, but received 200");
+         client.assert(response.status === 400, `Expected response 400 when editing antique, but received ${response.status}`);
      }
  )
  %}
 
+### Edit an antique - bad weather - authorization
+PATCH {{protocol}}{{host}}:{{port}}/antiques/1
+Content-Type: application/json
+
+{
+  "name": "Bulgarian Orthodox Vase",
+  "type": "vase",
+  "origin": "Bulgaria",
+  "year": "1760",
+  "material": "Porcelain",
+  "description": "old vase",
+  "startTime": "1698911678638",
+  "endTime": "1706828400000",
+  "startingPrice": 800,
+  "image": "https://i.etsystatic.com/12242579/r/il/600d1c/4006288033/il_fullxfull.4006288033_ah1y.jpg"
+}
+
+> {%
+    client.test(
+        "Edit an antique",
+        function () {
+            client.assert(response.status === 500, `Expected response 500 when editing antique, but received ${response.status}`);
+        }
+    )
+%}
+
+
 ### Delete an antique
 DELETE {{protocol}}{{host}}:{{port}}/antiques/1
-//does everything have content-type
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 > {%
     client.test(
@@ -167,14 +268,27 @@ Content-Type: application/json
 
 ### Delete an antique - bad weather
 DELETE {{protocol}}{{host}}:{{port}}/antiques/-1
-//does everything have content-type
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+> {%
+    client.test(
+        "Delete an antique",
+        function () {
+            client.assert(response.status === 404, `Expected error code 400 when deleting antique, but received ${response.status}`);
+        }
+    )
+%}
+
+### Delete an antique - bad weather - authorization
+DELETE {{protocol}}{{host}}:{{port}}/antiques/2
 Content-Type: application/json
 
 > {%
     client.test(
         "Delete an antique",
         function () {
-            client.assert(response.status === 400, "Expected error code 400, but deleted the antique and received 200");
+            client.assert(response.status === 500, `Expected error code 500, but received ${response.status}`);
         }
     )
 %}

@@ -4,7 +4,6 @@
     import tokenStore from "../stores/tokenStore.js";
     import {isLoggedIn} from "../utils/token-utils.js";
     import router from "page";
-    import {isAdmin} from "../utils/token-utils.js";
     import filterStore from "../stores/filterStore.js";
 
     export let active;
@@ -12,7 +11,6 @@
     let searchTerm = '';
     function handleSearch() {
         $filterStore.search = searchTerm;
-        console.log("Searching for: " + searchTerm);
     }
 
     function handleLogout() {
@@ -45,9 +43,6 @@
                     <a class:active={active === "/register"} on:click={() => router(`/register`)} class="navLink">Register</a>
                 {/if}
             </li>
-            <!--{#if isAdmin($tokenStore.token)}-->
-            <!--    <a class:active={active === "/login"} on:click={() => router(`/login`)} class="navLink">Admin Panel</a>-->
-            <!--{/if}-->
         </ul>
     </nav>
 </header>

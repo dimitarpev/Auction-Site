@@ -1,11 +1,24 @@
 ### Get all bids of a user
-GET {{protocol}}{{host}}:{{port}}/users/1/bids
+GET {{protocol}}{{host}}:{{port}}/users/djimi2992@outlook.com/bids
+Authorization: Bearer {{admin_token}}
 
 > {%
     client.test(
         "Get all bids of specific user",
         function () {
             client.assert(response.status === 200, "Failed to get list of bids");
+        }
+    )
+%}
+
+### Get all bids of a user - bad weather - authorization
+GET {{protocol}}{{host}}:{{port}}/users/djimi2992@outlook.com/bids
+
+> {%
+    client.test(
+        "Get all bids of specific user",
+        function () {
+            client.assert(response.status === 500, `Expected error status 500 when getting bids of user, but received ${response.status}`);
         }
     )
 %}
@@ -22,17 +35,42 @@ GET {{protocol}}{{host}}:{{port}}/antiques/1/bids
     )
 %}
 
+### Get all winnings for a user
+GET {{protocol}}{{host}}:{{port}}/users/user@user.com/winners
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test(
+        "Get all winning bids for a specific user",
+        function () {
+            client.assert(response.status === 200, "Failed to get list of winning bids");
+        }
+    )
+%}
+
+### Get all winnings for a user - bad weather - authorization
+GET {{protocol}}{{host}}:{{port}}/users/djimi2992@outlook.com/winners
+
+> {%
+    client.test(
+        "Get all winning bids for a specific user",
+        function () {
+            client.assert(response.status === 500, `Expected error status 500 when getting winning bids of user, but received ${response.status}`);
+        }
+    )
+%}
+
 
 ### Place a new bid for an antique
 POST {{protocol}}{{host}}:{{port}}/antiques/1/bids
 Content-Type: application/json
-
+Authorization: Bearer {{user_token}}
 
 {
-  "amount": 900,
-  "dateTime": "09/09/2023",
-  "userEmail": "djimi2992@outlook.com",
-  "antiqueId": 1
+  "amount": 1000,
+  "dateTime": "1698911678638",
+  "userEmail": "user@user.com",
+  "antiqueId": "1"
 }
 
 > {%
@@ -40,20 +78,19 @@ Content-Type: application/json
         "Create new bid for an antique",
         function () {
             client.assert(response.status === 201, "Failed to create bid");
-            const bid = response.body;
-            client.assert(bid.length >= 1, "Incorrect number of arguments when creating user");
-            client.assert(bid.amount === 900, "Amount variable not assigned correctly");
-            client.assert(bid.dateTime === "09/09/2023", "DateTime variable not assigned correctly");
-            client.assert(bid.userEmail === "djimi2992@outlook.com", "UserEmails variable not assigned correctly");
-            client.assert(bid.antiqueId === 1, "AntiqueId variable not assigned correctly");
+            const bid = JSON.parse(request.body());
+            client.assert(bid.amount === 1000, "Amount variable not assigned correctly");
+            client.assert(bid.dateTime === "1698911678638", "DateTime variable not assigned correctly");
+            client.assert(bid.userEmail === "user@user.com", "UserEmails variable not assigned correctly");
+            client.assert(bid.antiqueId === "1", "AntiqueId variable not assigned correctly");
         }
     )
 %}
 
-### Place a new bid - bad weather
+### Place a new bid for an antique - bad weather
 POST {{protocol}}{{host}}:{{port}}/antiques/1/bids
 Content-Type: application/json
-
+Authorization: Bearer {{user_token}}
 
 {
   "amount": -1
@@ -64,7 +101,27 @@ Content-Type: application/json
     client.test(
         "Create new bid for an antique",
         function () {
-            client.assert(response.status === 400, "Expected response code 400, but received 201");
+            client.assert(response.status === 400, `Expected response code 400 when placing a bid, but received ${response.status}`);
+        }
+    )
+%}
+
+### Place a new bid for an antique - bad weather - authorization
+POST {{protocol}}{{host}}:{{port}}/antiques/1/bids
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "dateTime": "1698911678638",
+  "userEmail": "user@user.com",
+  "antiqueId": "1"
+}
+
+> {%
+    client.test(
+        "Create new bid for an antique",
+        function () {
+            client.assert(response.status === 500, `Expected error status 500 when placing a bid, but received ${response.status}`);
         }
     )
 %}
@@ -72,6 +129,7 @@ Content-Type: application/json
 ### Delete a bid from antique auction
 DELETE {{protocol}}{{host}}:{{port}}/antiques/1/bids/1
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 > {%
     client.test(
@@ -85,12 +143,27 @@ Content-Type: application/json
 ### Delete a bid - bad weather
 DELETE {{protocol}}{{host}}:{{port}}/antiques/1/bids/-1
 Content-Type: application/json
+Authorization: Bearer {{admin_token}}
 
 > {%
     client.test(
         "Delete bid for antique auction",
         function () {
-            client.assert(response.status === 400, "Expected error code 400, but deleted the bid and received 200");
+            client.assert(response.status === 404, `Expected error code 404 when deleting bid, but received ${response.status}`);
+        }
+    )
+%}
+
+### Delete a bid - bad weather - authorization
+DELETE {{protocol}}{{host}}:{{port}}/antiques/1/bids/1
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+> {%
+    client.test(
+        "Delete bid for antique auction",
+        function () {
+            client.assert(response.status === 401, `Expected error status 401 when getting bids of user, but received ${response.status}`);
         }
     )
 %}

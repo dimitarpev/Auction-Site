@@ -14,18 +14,11 @@
     let filteredMaterial = '';
     let filteredOrigin = '';
     let filteredCentury = '';
-    // Filter options
-    // let filterMaterialOptions = ["All", "Bronze", "Gold", "Iron", "Porcelain"];
-    // let filterOriginOptions = ["All", "Bulgaria", "Netherlands", "Greece"];
-
 
     function handleFilterApply() {
-        console.log(filteredMaterial);
-        console.log(filteredOrigin);
         $filterStore.material = filteredMaterial;
         $filterStore.origin = filteredOrigin;
         const actualYear = sliderValue * 100;
-        console.log(actualYear);
         $filterStore.year = actualYear;
     }
 

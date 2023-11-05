@@ -1,5 +1,5 @@
 <script>
-    import BidItem from "../lib/BidItem.svelte";
+    import BidItem from "./BidItem.svelte";
 
     export let antique;
 
@@ -30,7 +30,7 @@
             <p>No bids yet!</p>
         {/if}
         {#each bids as bid, index}
-            <BidItem bid={bid} bidNumber={index + 1}/>
+            <BidItem bid={bid} bidNumber={index + 1} endTime={antique.endTime} />
         {/each}
    </div>
 {:catch error}

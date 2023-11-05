@@ -1,7 +1,7 @@
 <script>
     import router from "page";
     import noImage from '../assets/No-Image-Placeholder.svg.png';
-    import RemainingTime from "./RemainingTime.svelte";
+    import RemainingTime from "../lib/RemainingTime.svelte";
     export let auctionItem;
 
     function handleImageError(auctionItem) {
@@ -22,6 +22,7 @@
 </div>
 
 <style>
+
     .auctionItem {
         width: 30%;
         height: 30%;
@@ -56,6 +57,19 @@
     .auctionTitle {
         font-weight: bold;
         font-family: "Courier New",sans-serif;
+    }
+
+    @media screen and (max-width: 1200px) {
+        .auctionItem {
+            width: 15%;
+            height: 15%;
+        }
+        .image-container {
+            width: 15rem;
+            height: 15rem;
+            max-height: 15rem;
+
+        }
     }
 
 </style>

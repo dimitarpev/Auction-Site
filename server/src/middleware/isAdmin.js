@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import statusCodes from "http-status-codes";
 export function isAdmin(req, res, next) {
    if (req.user.isAdmin){

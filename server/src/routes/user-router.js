@@ -8,7 +8,5 @@ const router = express.Router();
 router.get('/', isLoggedIn, isAdmin, userController.getAllUsers);
 router.get('/:email', isLoggedIn, isAdmin, userController.getSpecificUser);
 router.post('/', userController.addUser);
-router.patch('/:username', isLoggedIn, isAdmin, userController.editUser);
-router.delete('/:username', isLoggedIn, isAdmin, userController.deleteUser);
 
 export default router;

@@ -4,6 +4,7 @@
 
     export let bid;
     export let bidNumber;
+    export let endTime;
 
     function formatDateTime(dateTime) {
         return new Intl.DateTimeFormat("en-US", {
@@ -18,20 +19,23 @@
 
     async function deleteBid() {
         try {
-            const response = await fetch('http://localhost:3000/antiques/' + bid.antiqueId + '/bids/' + bid.id, {
-                method: "DELETE",
-                headers: {
-                    'Authorization': `Bearer ${$tokenStore.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({data: bid})
-            });
-            if (response.ok){
-                const data = await response.json();
-                console.log(data);
+            if (endTime > Date.now()){
+                const response = await fetch('http://localhost:3000/antiques/' + bid.antiqueId + '/bids/' + bid.id, {
+                    method: "DELETE",
+                    headers: {
+                        'Authorization': `Bearer ${$tokenStore.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({data: bid})
+                });
+                if (response.ok){
+                    const data = await response.json();
+                } else {
+                    const errorData = await response.json();
+                    console.error(`Error: ${response.status} - ${errorData.error}`);
+                }
             } else {
-                const errorData = await response.json();
-                console.error(`Error: ${response.status} - ${errorData.error}`);
+                console.log("Cannot delete bid when auction has ended");
             }
         } catch (e){
             console.log(e);
@@ -45,7 +49,7 @@
 
 <div class="personPlacedBid">
     <div class="individualBid">
-        {#if isAdmin($tokenStore.token)}
+        {#if isAdmin($tokenStore.token) && endTime > Date.now()}
             <span class="deleteBid" on:click={deleteBid}>X</span>
         {/if}
         <p class="bidName">Bid number: {bidNumber}</p>

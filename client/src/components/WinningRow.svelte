@@ -1,6 +1,5 @@
 <script>
-    import AuctionItem from "../lib/AuctionItem.svelte";
-    import winningAuctionStore from "../stores/winningAuctionStore.js";
+    import AuctionItem from "./AuctionItem.svelte";
 
     export let winningBid;
 
@@ -10,10 +9,6 @@
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
-                if (Date.now() > data.endTime) {
-                    $winningAuctionStore.paymentPending += winningBid.amount;
-                }
                 return data;
             } else {
                 const errorData = await response.json();

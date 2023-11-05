@@ -8,6 +8,8 @@
 
     export let params;
 
+    let filterMaterial = filterMaterialOptions.slice(1);
+    let filterOrigin = filterOriginOptions.slice(1);
 
     let name = '';
     let type = '';
@@ -15,7 +17,6 @@
     let year = '';
     let material = '';
     let description = '';
-    let startTime = Date.now();
     let endTime;
     let startingPrice = '';
     let image = '';
@@ -24,6 +25,7 @@
     let selectedEndTimeOption = endTimeSelections[0];
     let errorMessage = '';
     async function handleAuctionCreation() {
+        let startTime = Date.now();
         try {
             switch (selectedEndTimeOption) {
                 case "1 minute":
@@ -55,7 +57,6 @@
             if (response.ok){
                 const data   = await response.json();
                 router('/');
-                console.log(data);
             } else {
                 errorMessage = "Invalid input / All fields must be filled";
                 const errorData = await response.json();
@@ -84,7 +85,7 @@
             <label for="origin">Origin:</label>
 <!--            <input type="text" id="origin" bind:value={origin} class="form-control" />-->
             <select id="origin" bind:value={origin} class="form-control">
-                {#each filterOriginOptions as filter}
+                {#each filterOrigin as filter}
                     <option>{filter}</option>
                 {/each}
             </select>
@@ -97,7 +98,7 @@
             <label for="material">Material:</label>
 <!--            <input type="text" id="material" bind:value={material} class="form-control" />-->
             <select id="material" bind:value={material} class="form-control">
-                {#each filterMaterialOptions as filter}
+                {#each filterMaterial as filter}
                     <option>{filter}</option>
                 {/each}
             </select>

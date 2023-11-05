@@ -1,6 +1,5 @@
 import statusCodes from "http-status-codes";
 import bcrypt from "bcrypt";
-import token from "jsonwebtoken"
 import {users} from './user-controller.js';
 import {secret} from '../utils/utils.js';
 import jwt from "jsonwebtoken";
@@ -26,7 +25,6 @@ export function addToken(req, res) {
             });
         });
     } else {
-        console.log("User not found!");
         return res.status(statusCodes.BAD_REQUEST).json({error: 'Username or password wrong!'})
     }
 
